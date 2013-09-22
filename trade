@@ -1,0 +1,44 @@
+#!/usr/bin/php
+<?php
+/**
+ * Trade project
+ * knocka_a & bensaf_g
+ **
+ */
+
+require 	"class/Debugger.php";
+require 	"class/Trader.php";
+require 	"conf/Conf.php";
+
+$stdin = fopen('php://stdin', 'r');
+
+Debugger::emptyLog();
+
+$trader = new Trader();
+
+$day = 0;
+while (!feof($stdin)) {
+	/* On récupere les deux informations initiales */
+	if ($day == 0) {
+		$trader->setTotalMoney(trim(fgets($stdin)));
+		$trader->setTotalDay(trim(fgets($stdin)));
+		if (Conf::$debug) {
+			Debugger::debug("-- Trade is now launched --");
+			Debugger::debug("Initial capital is : " . $trader->getTotalMoney());
+			Debugger::debug("Nb. total days is : " . $trader->getTotalDay());
+		}
+	}
+
+	$data = trim(fgets($stdin));
+	if ($data == '--end--') {
+		if (Conf::$debug)
+			Debugger::debug("End of program.");
+		break 2;
+	}
+
+	$trader->trade($data, $day);
+
+	$day++;
+}
+
+?>
